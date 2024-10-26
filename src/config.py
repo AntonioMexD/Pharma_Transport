@@ -1,6 +1,18 @@
-# Configuración de parámetros del algoritmo genético
-CRUCE_PROBABILIDAD = 0.8
-MUTACION_PROBABILIDAD = 0.1
-POBLACION_TAMANO = 50
-GENERACIONES = 100
-SELECCION_TORNEO_K = 5
+# # Configuración de parámetros del algoritmo genético
+# CRUCE_PROBABILIDAD = 0.8
+# MUTACION_PROBABILIDAD = 0.1
+# POBLACION_TAMANO = 50
+# GENERACIONES = 100
+# SELECCION_TORNEO_K = 5
+
+# src/config.py
+# Configuración global para el proyecto
+CONFIG = {
+    'CRUCE_PROBABILIDAD': 0.8,
+    'MUTACION_PROBABILIDAD': 0.2,
+    'GENERACIONES': 50,
+    'POBLACION_INICIAL': 10,
+    'IMPACTO_MANIFESTACION': 50,
+    'IMPACTO_LLUVIA': 30,
+    'PENALIZACION_REFRIGERACION': 100
+}

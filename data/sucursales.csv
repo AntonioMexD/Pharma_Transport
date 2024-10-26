@@ -1,6 +1,6 @@
-id_sucursal,nombre,latitud,longitud
-1,Farmacia Quillacollo,-17.391299478699633, -66.27090454066466
-2,Farmacia Blanco_Galindo,-17.38823388857942, -66.21938297106334
-3,Farmacia Cap_Vic_Ust,-17.3931981043285, -66.18136368957506
-4,Farmacia Simon_Lopez,-17.360946603159324, -66.17379790094365
-5,Farmacia Huayna_Kapac,-17.396406898065198, -66.16471895445015
+id_sucursal,nombre,latitud,longitud,capacidad,almacenamiento_especial
+1,Farmacia Quillacollo,-17.391299478699633, -66.27090454066466,500,Si
+2,Farmacia Blanco_Galindo,-17.38823388857942, -66.21938297106334,300,Si
+3,Farmacia Cap_Vic_Ust,-17.3931981043285, -66.18136368957506,250,No
+4,Farmacia Simon_Lopez,-17.360946603159324, -66.17379790094365,200,No
+5,Farmacia Huayna_Kapac,-17.396406898065198, -66.16471895445015,400,Si

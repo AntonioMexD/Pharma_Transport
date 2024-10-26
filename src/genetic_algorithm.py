@@ -1,37 +1,78 @@
 import random
 import networkx as nx
+from utils import afecta_ruta
+from config import CONFIG
 
-def generar_ruta_aleatoria(aduana, sucursales):
-    ruta = [aduana]
-    random.shuffle(sucursales)
-    ruta += sucursales
+def algoritmo_genetico(grafo, nodo_aduana, nodos_sucursales, medicamentos, factores_externos):
+    POBLACION_INICIAL = CONFIG['POBLACION_INICIAL']
+    CRUCE_PROBABILIDAD = CONFIG['CRUCE_PROBABILIDAD']
+    MUTACION_PROBABILIDAD = CONFIG['MUTACION_PROBABILIDAD']
+    GENERACIONES = CONFIG['GENERACIONES']
+
+    poblacion = inicializar_poblacion(POBLACION_INICIAL, nodos_sucursales)
+    
+    for _ in range(GENERACIONES):
+        nueva_poblacion = []
+
+        for i in range(POBLACION_INICIAL // 2):
+            padre1 = seleccionar_individuo(poblacion, grafo, medicamentos, factores_externos)
+            padre2 = seleccionar_individuo(poblacion, grafo, medicamentos, factores_externos)
+            
+            if random.random() < CRUCE_PROBABILIDAD:
+                hijo1, hijo2 = cruzar(padre1, padre2)
+            else:
+                hijo1, hijo2 = padre1, padre2
+            
+            nueva_poblacion.extend([hijo1, hijo2])
+
+        for i in range(len(nueva_poblacion)):
+            if random.random() < MUTACION_PROBABILIDAD:
+                nueva_poblacion[i] = mutar(nueva_poblacion[i])
+
+        poblacion = nueva_poblacion
+
+    mejor_ruta = min(poblacion, key=lambda ruta: evaluar_ruta(ruta, grafo, medicamentos, factores_externos))
+    return mejor_ruta
+
+def inicializar_poblacion(tamano, nodos_sucursales):
+    poblacion = []
+    for _ in range(tamano):
+        ruta = random.sample(nodos_sucursales, len(nodos_sucursales))
+        poblacion.append(ruta)
+    return poblacion
+
+def seleccionar_individuo(poblacion, grafo, medicamentos, factores_externos):
+    return random.choice(poblacion)
+
+def cruzar(padre1, padre2):
+    punto_cruce = len(padre1) // 2
+    hijo1 = padre1[:punto_cruce] + [nodo for nodo in padre2 if nodo not in padre1[:punto_cruce]]
+    hijo2 = padre2[:punto_cruce] + [nodo for nodo in padre1 if nodo not in padre2[:punto_cruce]]
+    return hijo1, hijo2
+
+def mutar(ruta):
+    idx1, idx2 = random.sample(range(len(ruta)), 2)
+    ruta[idx1], ruta[idx2] = ruta[idx2], ruta[idx1]
     return ruta
 
-def evaluar_ruta(ruta, grafo):
+def evaluar_ruta(ruta, grafo, medicamentos, factores_externos):
+    
+    if not all(nodo in grafo.nodes for nodo in ruta):
+        return float('inf')  # Penaliza rutas inválidas
+    
     distancia_total = 0
+    penalizacion = 0
+
     for i in range(len(ruta) - 1):
-        try:
-            distancia = nx.shortest_path_length(grafo, ruta[i], ruta[i + 1], weight="length")
-            distancia_total += distancia
-        except:
-            distancia_total += float("inf")
-    return distancia_total
+        nodo_actual, nodo_siguiente = ruta[i], ruta[i + 1]
+        distancia_total += nx.shortest_path_length(grafo, nodo_actual, nodo_siguiente, weight='length')
 
-def seleccion_por_torneo(poblacion, grafo, k):
-    seleccionados = []
-    for _ in range(len(poblacion)):
-        competidores = random.sample(poblacion, k)
-        mejor = min(competidores, key=lambda ruta: evaluar_ruta(ruta, grafo))
-        seleccionados.append(mejor)
-    return seleccionados
+        for factor in factores_externos:
+            if afecta_ruta(factor, nodo_actual, nodo_siguiente):
+                penalizacion += CONFIG['IMPACTO_' + factor['impacto'].upper()]
 
-def cruce_rutas(ruta1, ruta2):
-    punto_cruce = random.randint(1, len(ruta1) - 2)
-    nueva_ruta = ruta1[:punto_cruce] + [nodo for nodo in ruta2 if nodo not in ruta1[:punto_cruce]]
-    return nueva_ruta
+    for medicamento in medicamentos:
+        if medicamento['refrigeracion'] and distancia_total > 5000:
+            penalizacion += CONFIG['PENALIZACION_REFRIGERACION']
 
-def mutacion_ruta(ruta, probabilidad_mutacion):
-    if random.random() < probabilidad_mutacion:
-        i, j = random.sample(range(1, len(ruta) - 1), 2)
-        ruta[i], ruta[j] = ruta[j], ruta[i]
-    return ruta
+    return distancia_total + penalizacion
