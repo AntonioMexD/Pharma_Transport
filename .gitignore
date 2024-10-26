@@ -1,0 +1,41 @@
+# Ignorar archivos de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Entornos virtuales
+venv/
+env/
+.venv/
+.conda/
+*.egg-info/
+
+# Archivos de configuración y caché
+.cache/
+*.log
+
+# Archivos de configuración de IDEs/editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Archivos de Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Archivos de base de datos temporales o locales
+*.sqlite3
+*.db
+
+# Archivos de gráficos o mapas generados
+*.graphml
+
+# Ignorar datos sensibles o archivos grandes de ejemplo
+data/*.csv
+data/*.json
+data/*.xml
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
